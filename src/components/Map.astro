@@ -82,7 +82,7 @@
 
 	// Push borders out to radius ~101.25 (outside the grid) to ensure visibility
 	// Calculation: 6371 - (-10 * 8) = 6451. 6451/6371 * 100 = 101.25
-	const BORDER_DEPTH_OFFSET = -10;
+	const BORDER_DEPTH_OFFSET = -12;
 
 	fetch('/countries.geojson')
 		.then(r => r.json())
@@ -117,11 +117,11 @@
 
 			const borders = new THREE.LineSegments(
 				bordersGeometry,
-				new THREE.LineBasicMaterial({
-					color: 0x60a5fa,
-					transparent: true,
-					opacity: 0.5,
-					blender: THREE.AdditiveBlending,
+      new THREE.LineBasicMaterial({
+        opacity: 1.0,
+        transparent: true,
+        color: 0x6586B5,
+
 				})
 			)
 			scene.add(borders)
