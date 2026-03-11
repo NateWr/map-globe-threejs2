@@ -1,6 +1,7 @@
 <canvas class="map w-full h-full"></canvas>
 
 <script>
+  import debounce from 'debounce'
   import * as THREE from 'three'
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
   import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -16,9 +17,8 @@
     height: window.innerHeight,
     pixelRatio: Math.min(window.devicePixelRatio, 2)
   }
-  const aspectRatio = sizes.width / sizes.height
 
-  const camera = new THREE.PerspectiveCamera(45, aspectRatio, 1, 1000)
+  const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 1, 1000)
   camera.position.set(0, 20, EARTH_RADIUS * 3)
 
   const controls = new OrbitControls(camera, canvas)
@@ -130,6 +130,7 @@
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
+    antialias: true,
   })
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   renderer.setSize(sizes.width, sizes.height)
@@ -139,6 +140,20 @@
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
   scene.background = new THREE.Color( 0x000000 );
   scene.environment = pmremGenerator.fromScene(environment, 0.2).texture;
+
+  const resize = () => {
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+    sizes.pixelRatio = Math.min(window.devicePixelRatio, 2)
+
+    renderer.setSize(sizes.width, sizes.height)
+    renderer.setPixelRatio(sizes.pixelRatio)
+
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
+  }
+
+  window.addEventListener('resize', debounce(resize, 500))
 
   const tick = () => {
     controls.update()
