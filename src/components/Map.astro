@@ -104,13 +104,13 @@
       };
 
       data.features.forEach((feature: any) => {
-          if (feature.geometry.type === 'Polygon') {
-            feature.geometry.coordinates.forEach((coords: number[][]) => addPoints(coords));
-          } else if (feature.geometry.type === 'MultiPolygon') {
-            feature.geometry.coordinates.forEach((polygon: number[][][]) => {
-              polygon.forEach(coords => addPoints(coords));
-            });
-          }
+        if (feature.geometry.type === 'Polygon') {
+          feature.geometry.coordinates.forEach((coords: number[][]) => addPoints(coords));
+        } else if (feature.geometry.type === 'MultiPolygon') {
+          feature.geometry.coordinates.forEach((polygon: number[][][]) => {
+            polygon.forEach(coords => addPoints(coords));
+          });
+        }
       });
 
       const bordersGeometry = new THREE.BufferGeometry()
