@@ -5,9 +5,7 @@
 	import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 	import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 	import { getPositionFromLatLonDepth } from '../utils/geojson'
-
-	const EARTH_RADIUS = 100
-	const REAL_EARTH_RADIUS_KM = 6371;
+  import { EARTH_RADIUS } from '../utils/geojson';
 
 	const canvas = document.querySelector('canvas.map')
 

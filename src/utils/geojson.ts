@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 
-const EARTH_RADIUS = 100
-const DEPTH_SCALE_FACTOR = 10
-const REAL_EARTH_RADIUS_KM = 6371
+export const EARTH_RADIUS = 100
+export const DEPTH_SCALE_FACTOR = 10
+export const REAL_EARTH_RADIUS_KM = 6371
 
 /**
  * Converts Geodetic coordinates to Cartesian 3D coordinates.
