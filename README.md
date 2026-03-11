@@ -1,46 +1,13 @@
-# Astro Starter Kit: Basics
-
-```sh
-npm create astro@latest -- --template basics
-```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- [x] Reproduce seismic 3d style
+- [ ] Hover/click interactions
+  - Earcut for polygon from points: https://github.com/mapbox/earcut
+  - Libtess for polygon from points: https://github.com/brendankenny/libtess.js
+  - consider using threejs globe and rendering it alongside the other things: https://github.com/vasturiano/three-globe
+  - hexed polygons might work too: https://vasturiano.github.io/three-globe/example/hexed-polygons/
+- [ ] Remove CPU/GPU-intensive features on small screens
+- [ ] Plot points
+- [ ] Arcs
+- [ ] Bars extending outwards
+- [ ] Better environment for reflections
+- [ ] GUI for configuration
+- [ ] Try different styles
