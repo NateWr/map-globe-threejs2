@@ -9,14 +9,14 @@ import math
 import mathutils
 
 GEOJSON_FILE = '/home/nate/Projects/map-globe-threejs2/public/countries.geojson'
-RADIUS = 0.5      # the size of our globe
-THICKNESS = 0.01  # the thickness of each piece
+RADIUS = 100      # the size of our globe
+THICKNESS = 1  # the thickness of each piece
 
 def parse_geojson(path):
     file = open(path)
     data = json.load(file)
     for feature in data['features']:
-        name = feature['properties']['iso_a3']
+        name = feature['properties']['name']
         if feature['geometry']['type'] == 'Polygon':
             create_piece(feature['geometry']['coordinates'], name)
         elif feature['geometry']['type'] == 'MultiPolygon':
