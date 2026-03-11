@@ -59,7 +59,7 @@
       envMapIntensity: 1.5,
     })
   )
-  // scene.add(surface)
+  scene.add(surface)
 
   // Holographic grid
   const grid = new THREE.Mesh(
@@ -89,55 +89,53 @@
 
   const countries = new THREE.Group()
   countries.scale.set(
-    countries.scale.x * 1.05,
-    countries.scale.y * 1.05,
-    countries.scale.z * 1.05
+    countries.scale.x * 1.06,
+    countries.scale.y * 1.06,
+    countries.scale.z * 1.06
   )
   scene.add(countries)
 
-  // const countryMaterial = new THREE.MeshBasicMaterial({
-  //   color: 0xcccccc,
+  const countryMaterial = new THREE.MeshBasicMaterial({
+    color: 0x2B3345,
+  })
+  // const countryMaterial = new THREE.MeshPhysicalMaterial({
+  //   color: 0x2B3345,
+  //   roughness: 0.02,
+  //   metalness: 0.3,
+  //   transmission: 0.7,
+  //   thickness: 15,
+  //   clearcoat: 1.0,
+  //   clearcoatRoughness: 0.0,
+  //   ior: 1.5,
+  //   transparent: true,
+  //   opacity: 1.0,
+  //   envMapIntensity: 1.5,
+  //   depthWrite: true,
   // })
-  const countryMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xff0000,
-    roughness: 0.02,
-    metalness: 0.3,
-    transmission: 0.7,
-    thickness: 15,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.0,
-    ior: 1.5,
-    transparent: true,
+  const borderMaterial = new THREE.LineBasicMaterial({
     opacity: 1.0,
-    envMapIntensity: 1.5,
-    depthWrite: true,
+    transparent: true,
+    color: 0x6586b5,
   })
   // countryMaterial.shading = THREE.SmoothShading
   const gltfLoader = new GLTFLoader()
   gltfLoader.load(
     '/globe-country-boundaries.glb',
     gltf => {
-      console.log(gltf.scene)
-      gltf.scene.scale.set(
-        1.02,
-        1.02,
-        1.02
-      )
-      gltf.scene.children.forEach(mesh => {
+      const countryMeshes = [...gltf.scene.children]
+      countryMeshes.forEach(mesh => {
         mesh.material = countryMaterial
+        mesh.material.shading = THREE.InterpolateSmooth
+        mesh.geometry.computeVertexNormals(true)
+        countries.add(mesh)
+        const line = new THREE.LineSegments(
+          new THREE.EdgesGeometry(mesh.geometry, 30),
+          borderMaterial
+        )
+        countries.add(line)
       })
-      countries.add(gltf.scene)
     }
   )
-
-  const updateCountryMaterials = () => {
-    scene.traverse(child => {
-      if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-        child.material.color.set(0xff0000)
-      }
-    })
-  }
-
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
