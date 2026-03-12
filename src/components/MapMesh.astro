@@ -22,6 +22,8 @@
   const COUNTRY_HOVER_SCALE = 1.09
   const COUNTRY_SCALE_SPEED = 0.004
 
+  const SCREEN_WIDTH_LG = 1200
+
   const canvas = document.querySelector('canvas.map')
 
   const scene = new THREE.Scene()
@@ -75,7 +77,9 @@
       envMapIntensity: 1.5,
     })
   )
-  scene.add(surface)
+  if (sizes.width >= SCREEN_WIDTH_LG) {
+    scene.add(surface)
+  }
 
   // Holographic grid
   const grid = new THREE.Mesh(
@@ -192,6 +196,14 @@
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
     sizes.pixelRatio = Math.min(window.devicePixelRatio, 2)
+
+    if (sizes.width >= SCREEN_WIDTH_LG) {
+      if (!surface.parent) {
+        scene.add(surface)
+      }
+    } else {
+      scene.remove(surface)
+    }
 
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(sizes.pixelRatio)

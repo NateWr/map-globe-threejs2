@@ -6,7 +6,7 @@
     - Libtess for polygon from points: https://github.com/brendankenny/libtess.js
     - consider using threejs globe and rendering it alongside the other things: https://github.com/vasturiano/three-globe
     - hexed polygons might work too: https://vasturiano.github.io/three-globe/example/hexed-polygons/
-- [ ] Remove CPU/GPU-intensive features on small screens
+- [✔] Remove CPU/GPU-intensive features on small screens
 - [ ] Rebuild in R3F
 - [ ] show country name on hover
 - [ ] Plot points
