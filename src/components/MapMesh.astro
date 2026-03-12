@@ -8,6 +8,8 @@
   import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   import { EARTH_RADIUS } from '../utils/geojson';
 
+  const COUNTRY_HOVER_DISTSANCE_FROM_CAMERA = 250
+
   const canvas = document.querySelector('canvas.map')
 
   const scene = new THREE.Scene()
@@ -184,7 +186,7 @@
 
     if (countryMeshes.length) {
       const countriesFacingCamera = countryMeshes.filter(country => {
-        return country.geometry.boundingSphere.distanceToPoint(camera.position) < 240
+        return country.geometry.boundingSphere.distanceToPoint(camera.position) < COUNTRY_HOVER_DISTSANCE_FROM_CAMERA
       })
       countryMeshes.forEach(mesh => mesh.material = countryMaterial)
       const raycaster = new THREE.Raycaster()
