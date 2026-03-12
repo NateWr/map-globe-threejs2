@@ -99,23 +99,23 @@
   )
   scene.add(countries)
 
-  const countryMaterial = new THREE.MeshBasicMaterial({
-    color: 0x2B3345,
-  })
-  // const countryMaterial = new THREE.MeshPhysicalMaterial({
+  // const countryMaterial = new THREE.MeshBasicMaterial({
   //   color: 0x2B3345,
-  //   roughness: 0.02,
-  //   metalness: 0.3,
-  //   transmission: 0.7,
-  //   thickness: 15,
-  //   clearcoat: 1.0,
-  //   clearcoatRoughness: 0.0,
-  //   ior: 1.5,
-  //   transparent: true,
-  //   opacity: 1.0,
-  //   envMapIntensity: 1.5,
-  //   depthWrite: true,
   // })
+  const countryMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x2B3345,
+    roughness: 0.02,
+    metalness: 0.3,
+    transmission: 0.7,
+    thickness: 15,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.0,
+    ior: 1.5,
+    transparent: true,
+    opacity: 1.0,
+    envMapIntensity: 1.5,
+    depthWrite: true,
+  })
   const highlightedCountryMaterial = countryMaterial.clone()
   highlightedCountryMaterial.color.set(0xff0000)
   const borderMaterial = new THREE.LineBasicMaterial({
