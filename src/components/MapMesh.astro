@@ -112,17 +112,20 @@
   //   envMapIntensity: 1.5,
   //   depthWrite: true,
   // })
+  const highlightedCountryMaterial = countryMaterial.clone()
+  highlightedCountryMaterial.color.set(0xff0000)
   const borderMaterial = new THREE.LineBasicMaterial({
     opacity: 1.0,
     transparent: true,
     color: 0x6586b5,
   })
   // countryMaterial.shading = THREE.SmoothShading
+  let countryMeshes : [] = []
   const gltfLoader = new GLTFLoader()
   gltfLoader.load(
     '/globe-country-boundaries.glb',
     gltf => {
-      const countryMeshes = [...gltf.scene.children]
+      countryMeshes = [...gltf.scene.children]
       countryMeshes.forEach(mesh => {
         mesh.material = countryMaterial
         mesh.material.shading = THREE.InterpolateSmooth
@@ -172,15 +175,15 @@
 
   const tick = () => {
 
-    // if (borders) {
-    //   borders.material.color.set(0x6586b5)
-    //   const raycaster = new THREE.Raycaster()
-    //   raycaster.setFromCamera(mouse, camera)
-    //   const intersectectedBorders = raycaster.intersectObjects([borders])
-    //   for (const intersection of intersectectedBorders) {
-    //     intersection.object.material.color.set(0xff0000)
-    //   }
-    // }
+    if (countryMeshes.length) {
+      countryMeshes.forEach(mesh => mesh.material = countryMaterial)
+      const raycaster = new THREE.Raycaster()
+      raycaster.setFromCamera(mouse, camera)
+      const intersectedCountries = raycaster.intersectObjects(countryMeshes)
+      if (intersectedCountries.length) {
+        intersectedCountries[0].object.material = highlightedCountryMaterial
+      }
+    }
 
     controls.update()
     renderer.render(scene, camera)
