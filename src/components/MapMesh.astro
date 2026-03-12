@@ -1,4 +1,7 @@
-<canvas class="map w-full h-full"></canvas>
+<div class="relative w-full h-full">
+  <canvas class="map w-full h-full"></canvas>
+  <span id="tooltip" class="fixed font-mono font-bold text-sm uppercase"></span>
+</div>
 
 <script>
   import debounce from 'debounce'
@@ -201,15 +204,24 @@
 
   window.addEventListener('resize', debounce(resize, 500))
 
+  const TOOLTIP_OFFSET = 16
+  const tooltip = document.getElementById('tooltip')
+
+  let hoverEnabled = true
+
   const mouse = new THREE.Vector2()
   canvas.addEventListener('mousemove', e => {
     mouse.x = e.clientX / sizes.width * 2 - 1
     mouse.y = - (e.clientY / sizes.height) * 2 + 1
+    tooltip.style.top = e.clientY + TOOLTIP_OFFSET + 'px'
+    tooltip.style.left = e.clientX + TOOLTIP_OFFSET + 'px'
   })
 
+  // Prevent hover effects on touch devices
   canvas.addEventListener('touchmove', e => {
-    mouse.x = e.clientX / sizes.width * 2 - 1
-    mouse.y = - (e.clientY / sizes.height) * 2 + 1
+    hoverEnabled = false
+    mouse.x = -10
+    mouse.y = -10
   })
 
   const timer = new THREE.Timer()
@@ -217,7 +229,7 @@
   const tick = () => {
 
     // Hover effect
-    if (countryGroups.length) {
+    if (hoverEnabled && countryGroups.length) {
       const elapsed = timer.getElapsed()
       const countriesFacingCamera = countryIntersectionObjects.filter(mesh => {
         return mesh.geometry.boundingSphere.distanceToPoint(camera.position) < COUNTRY_HOVER_DISTANCE_FROM_CAMERA
@@ -228,8 +240,8 @@
       if (intersectedCountries.length) {
         const group : THREE.Group = countryGroups.find(g => g.name === intersectedCountries[0].object.name)
         if (
-          (!activeGroup || activeGroup.group.name != group.name)
-      ) {
+            (!activeGroup || activeGroup.group.name != group.name)
+        ) {
           if (activeGroup) {
             activeGroup.group.children[0].material = countryMaterial
           }
@@ -239,9 +251,11 @@
           }
           activeGroup.group.children[0].material = highlightedCountryMaterial
         }
+        tooltip.innerHTML = activeGroup.group.name
       } else if (activeGroup) {
         activeGroup.group.children[0].material = countryMaterial
         activeGroup = null
+        tooltip.innerHTML = ''
       }
       if (activeGroup && activeGroup.group.scale.x < COUNTRY_HOVER_SCALE) {
           activeGroup.group.scale.x += COUNTRY_SCALE_SPEED
