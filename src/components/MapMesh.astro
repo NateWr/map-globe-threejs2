@@ -155,6 +155,11 @@
         scene.add(group)
         countryGroups.push(group)
 
+        // A second country mesh that doesn't move on
+        // hover, so that hover targets can be stable.
+        // This fixes flashing issue when a hover
+        // animation moves the country out from under
+        // the mouse position.
         const bgMesh : THREE.Object3D = mesh.clone()
         bgMesh.material = countryBGMaterial
         bgMesh.scale.set(
