@@ -1,9 +1,11 @@
-- [x] Reproduce seismic 3d style
+- [✔] Reproduce seismic 3d style
 - [ ] Hover/click interactions
-  - Earcut for polygon from points: https://github.com/mapbox/earcut
-  - Libtess for polygon from points: https://github.com/brendankenny/libtess.js
-  - consider using threejs globe and rendering it alongside the other things: https://github.com/vasturiano/three-globe
-  - hexed polygons might work too: https://vasturiano.github.io/three-globe/example/hexed-polygons/
+  - [✔] mouseover follows swipe guestures on phone in an odd way.
+  - [✔] create mesh for raycasting
+    - Earcut for polygon from points: https://github.com/mapbox/earcut
+    - Libtess for polygon from points: https://github.com/brendankenny/libtess.js
+    - consider using threejs globe and rendering it alongside the other things: https://github.com/vasturiano/three-globe
+    - hexed polygons might work too: https://vasturiano.github.io/three-globe/example/hexed-polygons/
 - [ ] Remove CPU/GPU-intensive features on small screens
 - [ ] Plot points
 - [ ] Arcs

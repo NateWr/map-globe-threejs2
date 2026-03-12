@@ -6,7 +6,6 @@
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
   import { GLTFLoader } from 'three/examples/jsm/Addons.js';
   import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-  import { getPositionFromLatLonDepth } from '../utils/geojson'
   import { EARTH_RADIUS } from '../utils/geojson';
 
   const canvas = document.querySelector('canvas.map')
@@ -24,6 +23,9 @@
 
   const controls = new OrbitControls(camera, canvas)
   controls.enableDamping = true
+  controls.enableZoom = false
+  controls.minPolarAngle=1
+  controls.maxPolarAngle=1.8
 
   scene.add(new THREE.AmbientLight('0xffffff', 0.2))
   const pointLight1 = new THREE.PointLight(0xffffff, 3.0)
@@ -173,13 +175,21 @@
     mouse.y = - (e.clientY / sizes.height) * 2 + 1
   })
 
+  window.addEventListener('touchmove', e => {
+    mouse.x = e.clientX / sizes.width * 2 - 1
+    mouse.y = - (e.clientY / sizes.height) * 2 + 1
+  })
+
   const tick = () => {
 
     if (countryMeshes.length) {
+      const countriesFacingCamera = countryMeshes.filter(country => {
+        return country.geometry.boundingSphere.distanceToPoint(camera.position) < 240
+      })
       countryMeshes.forEach(mesh => mesh.material = countryMaterial)
       const raycaster = new THREE.Raycaster()
       raycaster.setFromCamera(mouse, camera)
-      const intersectedCountries = raycaster.intersectObjects(countryMeshes)
+      const intersectedCountries = raycaster.intersectObjects(countriesFacingCamera)
       if (intersectedCountries.length) {
         intersectedCountries[0].object.material = highlightedCountryMaterial
       }
