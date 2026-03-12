@@ -8,7 +8,16 @@
   import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   import { EARTH_RADIUS } from '../utils/geojson';
 
-  const COUNTRY_HOVER_DISTSANCE_FROM_CAMERA = 250
+  /*
+   * Distance at which the country is on the other side
+   * of the globe, or close to it. Distance represents
+   * distance from the camera.
+   */
+  const COUNTRY_HOVER_DISTANCE_FROM_CAMERA = 250
+
+  const COUNTRY_SCALE = 1.06
+  const COUNTRY_HOVER_SCALE = 1.09
+  const COUNTRY_SCALE_SPEED = 0.004
 
   const canvas = document.querySelector('canvas.map')
 
@@ -91,16 +100,11 @@
   )
   scene.add(glow)
 
-  const countries = new THREE.Group()
-  countries.scale.set(
-    countries.scale.x * 1.06,
-    countries.scale.y * 1.06,
-    countries.scale.z * 1.06
-  )
-  scene.add(countries)
-
   const countryMaterial = new THREE.MeshBasicMaterial({
     color: 0x2B3345,
+  })
+  const countryBGMaterial = new THREE.MeshBasicMaterial({
+    visible: false,
   })
   // const countryMaterial = new THREE.MeshPhysicalMaterial({
   //   color: 0x2B3345,
@@ -123,23 +127,44 @@
     transparent: true,
     color: 0x6586b5,
   })
-  // countryMaterial.shading = THREE.SmoothShading
-  let countryMeshes : [] = []
+  let countryGroups : THREE.Group[] = []
+  let countryIntersectionObjects : THREE.Object3D[] = []
+  let activeGroup : {time: number, group: THREE.Object3D} | null = null
   const gltfLoader = new GLTFLoader()
   gltfLoader.load(
     '/globe-country-boundaries-surface-only.glb',
     gltf => {
-      countryMeshes = [...gltf.scene.children]
-      countryMeshes.forEach(mesh => {
+      const countryMeshes = [...gltf.scene.children]
+      countryMeshes.forEach((mesh: THREE.Object3D) => {
+        const group = new THREE.Group()
+        group.name = mesh.name
+        group.scale.set(
+          group.scale.x * COUNTRY_SCALE,
+          group.scale.y * COUNTRY_SCALE,
+          group.scale.z * COUNTRY_SCALE
+        )
         mesh.material = countryMaterial
         mesh.material.shading = THREE.InterpolateSmooth
         mesh.geometry.computeVertexNormals(true)
-        countries.add(mesh)
+        group.add(mesh)
         const line = new THREE.LineSegments(
           new THREE.EdgesGeometry(mesh.geometry, 30),
           borderMaterial
         )
-        countries.add(line)
+        group.add(line)
+        scene.add(group)
+        countryGroups.push(group)
+
+        const bgMesh : THREE.Object3D = mesh.clone()
+        bgMesh.material = countryBGMaterial
+        bgMesh.scale.set(
+          bgMesh.scale.x * COUNTRY_SCALE,
+          bgMesh.scale.y * COUNTRY_SCALE,
+          bgMesh.scale.z * COUNTRY_SCALE
+        )
+        scene.add(bgMesh)
+
+        countryIntersectionObjects.push(mesh, bgMesh)
       })
     }
   )
@@ -182,19 +207,52 @@
     mouse.y = - (e.clientY / sizes.height) * 2 + 1
   })
 
+  const timer = new THREE.Timer()
+
   const tick = () => {
 
-    if (countryMeshes.length) {
-      const countriesFacingCamera = countryMeshes.filter(country => {
-        return country.geometry.boundingSphere.distanceToPoint(camera.position) < COUNTRY_HOVER_DISTSANCE_FROM_CAMERA
+    // Hover effect
+    if (countryGroups.length) {
+      const elapsed = timer.getElapsed()
+      const countriesFacingCamera = countryIntersectionObjects.filter(mesh => {
+        return mesh.geometry.boundingSphere.distanceToPoint(camera.position) < COUNTRY_HOVER_DISTANCE_FROM_CAMERA
       })
-      countryMeshes.forEach(mesh => mesh.material = countryMaterial)
       const raycaster = new THREE.Raycaster()
       raycaster.setFromCamera(mouse, camera)
       const intersectedCountries = raycaster.intersectObjects(countriesFacingCamera)
       if (intersectedCountries.length) {
-        intersectedCountries[0].object.material = highlightedCountryMaterial
+        const group : THREE.Group = countryGroups.find(g => g.name === intersectedCountries[0].object.name)
+        if (
+          (!activeGroup || activeGroup.group.name != group.name)
+      ) {
+          if (activeGroup) {
+            activeGroup.group.children[0].material = countryMaterial
+          }
+          activeGroup = {
+            time: elapsed,
+            group,
+          }
+          activeGroup.group.children[0].material = highlightedCountryMaterial
+        }
+      } else if (activeGroup) {
+        activeGroup.group.children[0].material = countryMaterial
+        activeGroup = null
       }
+      if (activeGroup && activeGroup.group.scale.x < COUNTRY_HOVER_SCALE) {
+          activeGroup.group.scale.x += COUNTRY_SCALE_SPEED
+          activeGroup.group.scale.y += COUNTRY_SCALE_SPEED
+          activeGroup.group.scale.z += COUNTRY_SCALE_SPEED
+      }
+      countryGroups.forEach(group => {
+        if (activeGroup && activeGroup.group.name == group.name) {
+          return
+        }
+        if (group.scale.x > COUNTRY_SCALE) {
+          group.scale.x -= COUNTRY_SCALE_SPEED
+          group.scale.y -= COUNTRY_SCALE_SPEED
+          group.scale.z -= COUNTRY_SCALE_SPEED
+        }
+      })
     }
 
     controls.update()
