@@ -20,8 +20,7 @@
   const COUNTRY_HOVER_DISTANCE_FROM_CAMERA = 250
 
   const COUNTRY_SCALE = 1.06
-  const COUNTRY_HOVER_SCALE = 1.09
-  const COUNTRY_SCALE_SPEED = new THREE.Vector3(0.004, 0.004, 0.004)
+  const COUNTRY_HIGHLIGHT_SCALE = 1.09
 
   const SCREEN_WIDTH_LG = 1200
 
@@ -241,13 +240,32 @@
 
   let highlightedGroup : THREE.Group | undefined = undefined
   const highlightGroup = (group?: THREE.Group) => {
+    if (group && highlightedGroup && group.name === highlightedGroup.name) {
+      return
+    }
     if (highlightedGroup) {
       highlightedGroup.children[0].material = countryMaterial
+      gsap.to(highlightedGroup.scale, {
+        duration: 0.2,
+        ease: 'power2.out',
+        x: COUNTRY_SCALE,
+        y: COUNTRY_SCALE,
+        z: COUNTRY_SCALE,
+      })
     }
     if (group) {
       group.children[0].material = highlightedCountryMaterial
     }
     highlightedGroup = group
+    if (highlightedGroup) {
+      gsap.to(highlightedGroup.scale, {
+        duration: 0.2,
+        ease: 'power2.out',
+        x: COUNTRY_HIGHLIGHT_SCALE,
+        y: COUNTRY_HIGHLIGHT_SCALE,
+        z: COUNTRY_HIGHLIGHT_SCALE,
+      })
+    }
   }
 
   let selectedGroup : THREE.Group | undefined = undefined
@@ -320,17 +338,6 @@
         highlightGroup(group)
       }
     }
-    if (highlightedGroup && highlightedGroup.scale.x < COUNTRY_HOVER_SCALE) {
-      highlightedGroup.scale.add(COUNTRY_SCALE_SPEED)
-    }
-    countryGroups.forEach(group => {
-      if (highlightedGroup && highlightedGroup.name == group.name) {
-        return
-      }
-      if (group.scale.x > COUNTRY_SCALE) {
-        group.scale.sub(COUNTRY_SCALE_SPEED)
-      }
-    })
 
     controls.update()
     renderer.render(scene, camera)
