@@ -24,6 +24,8 @@
 
   const SCREEN_WIDTH_LG = 1200
 
+  const CAMERA_DISTANCE = EARTH_RADIUS * 3
+
   const canvas = document.querySelector('canvas.map')
 
   const scene = new THREE.Scene()
@@ -35,7 +37,7 @@
   }
 
   const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 1, 1000)
-  camera.position.set(0, 20, EARTH_RADIUS * 3)
+  camera.position.set(0, 20, CAMERA_DISTANCE)
 
   const controls = new OrbitControls(camera, canvas)
   controls.enableDamping = true
@@ -236,7 +238,6 @@
     mouse.y = -10
   })
 
-
   let highlightedGroup : THREE.Group | undefined = undefined
   const highlightGroup = (group?: THREE.Group) => {
     if (highlightedGroup) {
@@ -249,19 +250,34 @@
   }
 
   let selectedGroup : THREE.Group | undefined = undefined
+  let cameraPos : THREE.Vector3 | null = null
   const selectGroup = (group?: THREE.Group) => {
     // Second click on group toggles it off
     if (selectedGroup) {
       highlightGroup()
       selectedGroup.children[0].material = countryMaterial
-      selectedGroup = undefined
-      return
+      if (group.name === selectedGroup.name) {
+        selectedGroup = undefined
+        return
+      }
     }
     highlightGroup(group)
     if (group) {
       group.children[0].material = selectedCountryMaterial
+      cameraPos = getCameraCenterOnPos(group.children[0])
+      camera.position.set(cameraPos.x, cameraPos.y, cameraPos.z)
     }
     selectedGroup = group
+  }
+
+  /**
+   * Get position to center the camera on an object
+   */
+  const getCameraCenterOnPos = (object: THREE.Object3D) : THREE.Vector3 => {
+    const origin = new THREE.Vector3()
+    const dir = new THREE.Vector3()
+    dir.subVectors(origin, object.geometry.boundingSphere.center).normalize()
+    return dir.multiplyScalar(- CAMERA_DISTANCE)
   }
 
   canvas.addEventListener('click', e => {
