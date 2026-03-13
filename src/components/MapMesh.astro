@@ -256,7 +256,7 @@
     if (selectedGroup) {
       highlightGroup()
       selectedGroup.children[0].material = countryMaterial
-      if (group.name === selectedGroup.name) {
+      if (group && group.name === selectedGroup.name) {
         selectedGroup = undefined
         return
       }
