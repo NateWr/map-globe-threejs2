@@ -13,11 +13,13 @@
   import { EARTH_RADIUS } from '../utils/geojson';
 
   /*
-   * Distance at which the country is on the other side
-   * of the globe, or close to it. Distance represents
-   * distance from the camera.
+   * Distance to the visible edge of the globe
+   * Objects further than this from the camera
+   * are not considered eligible for ray tracing
+   * as they are presumed to be on the other
+   * side of the globe
    */
-  const COUNTRY_HOVER_DISTANCE_FROM_CAMERA = 250
+  const DISTANCE_TO_GLOBE_EDGE = 250
 
   const COUNTRY_SCALE = 1.06
   const COUNTRY_HIGHLIGHT_SCALE = 1.09
@@ -90,7 +92,6 @@
   // Glossy surface
   const surface = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 64, 64),
-    // new THREE.MeshBasicMaterial({ color: 'black' })
     new THREE.MeshPhysicalMaterial({
       color: 0x000814,
       roughness: 0.02,
@@ -136,75 +137,59 @@
   )
   scene.add(glow)
 
-  const countryMaterial = new THREE.MeshBasicMaterial({
-    color: 0x2B3345,
-  })
   const countryBGMaterial = new THREE.MeshBasicMaterial({
     visible: false,
   })
-  // const countryMaterial = new THREE.MeshPhysicalMaterial({
-  //   color: 0x2B3345,
-  //   roughness: 0.02,
-  //   metalness: 0.3,
-  //   transmission: 0.7,
-  //   thickness: 15,
-  //   clearcoat: 1.0,
-  //   clearcoatRoughness: 0.0,
-  //   ior: 1.5,
-  //   transparent: true,
-  //   opacity: 1.0,
-  //   envMapIntensity: 1.5,
-  //   depthWrite: true,
-  // })
+  const countryMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xccbbbb,
+    roughness: 0.02,
+    metalness: 0.3,
+    transmission: 0.7,
+    thickness: 15,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.0,
+    ior: 1.5,
+    transparent: true,
+    opacity: 1.0,
+    envMapIntensity: 1.5,
+    depthWrite: true,
+  })
   const highlightedCountryMaterial = countryMaterial.clone()
   highlightedCountryMaterial.color.set(0x880000)
   const selectedCountryMaterial = countryMaterial.clone()
-  selectedCountryMaterial.color.set(0xff0000)
+  selectedCountryMaterial.color.set(0xdd0000)
   const borderMaterial = new THREE.LineBasicMaterial({
-    color: 0x6586b5,
+    color: 0x443333,
   })
-  let countryGroups : THREE.Group[] = []
+  let countries : THREE.Object3D | null = null
   let countryIntersectionObjects : THREE.Object3D[] = []
   const gltfLoader = new GLTFLoader()
   gltfLoader.load(
     '/globe-country-boundaries-surface-only.glb',
     gltf => {
-      const countryMeshes = [...gltf.scene.children]
-      countryMeshes.forEach((mesh: THREE.Object3D) => {
-        const group = new THREE.Group()
-        group.name = mesh.name
-        group.scale.set(
-          group.scale.x * COUNTRY_SCALE,
-          group.scale.y * COUNTRY_SCALE,
-          group.scale.z * COUNTRY_SCALE
-        )
-        mesh.material = countryMaterial
-        mesh.material.shading = THREE.InterpolateSmooth
-        mesh.geometry.computeVertexNormals(true)
-        group.add(mesh)
-        const line = new THREE.LineSegments(
-          new THREE.EdgesGeometry(mesh.geometry, 30),
-          borderMaterial
-        )
-        group.add(line)
-        scene.add(group)
-        countryGroups.push(group)
+      countries = gltf.scene
+      scene.add(countries)
+      countries.children.forEach((country: THREE.Country3D) => {
+        country.material = countryMaterial
+        country.scale.multiplyScalar(COUNTRY_SCALE)
 
-        // A second country mesh that doesn't move on
+        // A duplicate country mesh that doesn't move on
         // hover, so that hover targets can be stable.
-        // This fixes flashing issue when a hover
+        // This fixes the flashing issue when a hover
         // animation moves the country out from under
         // the mouse position.
-        const bgMesh : THREE.Object3D = mesh.clone()
-        bgMesh.material = countryBGMaterial
-        bgMesh.scale.set(
-          bgMesh.scale.x * COUNTRY_SCALE,
-          bgMesh.scale.y * COUNTRY_SCALE,
-          bgMesh.scale.z * COUNTRY_SCALE
-        )
-        scene.add(bgMesh)
+        const bgCountry : THREE.Object3D = country.clone()
+        bgCountry.material = countryBGMaterial
+        scene.add(bgCountry)
 
-        countryIntersectionObjects.push(mesh, bgMesh)
+        // Country border outlines
+        const border = new THREE.LineSegments(
+          new THREE.EdgesGeometry(country.geometry, 30),
+          borderMaterial
+        )
+        country.add(border)
+
+        countryIntersectionObjects.push(country, bgCountry)
       })
     }
   )
@@ -265,14 +250,14 @@
     mouse.y = -10
   })
 
-  let highlightedGroup : THREE.Group | undefined = undefined
-  const highlightGroup = (group?: THREE.Group) => {
-    if (group && highlightedGroup && group.name === highlightedGroup.name) {
+  let highlightedCountry : THREE.Object3D | undefined = undefined
+  const highlightCountry = (country?: THREE.Object3D) => {
+    if (country && highlightedCountry && country.name === highlightedCountry.name) {
       return
     }
-    if (highlightedGroup) {
-      highlightedGroup.children[0].material = countryMaterial
-      gsap.to(highlightedGroup.scale, {
+    if (highlightedCountry) {
+      highlightedCountry.material = countryMaterial
+      gsap.to(highlightedCountry.scale, {
         duration: 0.2,
         ease: 'power2.out',
         x: COUNTRY_SCALE,
@@ -280,12 +265,12 @@
         z: COUNTRY_SCALE,
       })
     }
-    if (group) {
-      group.children[0].material = highlightedCountryMaterial
+    if (country) {
+      country.material = highlightedCountryMaterial
     }
-    highlightedGroup = group
-    if (highlightedGroup) {
-      gsap.to(highlightedGroup.scale, {
+    highlightedCountry = country
+    if (highlightedCountry) {
+      gsap.to(highlightedCountry.scale, {
         duration: 0.2,
         ease: 'power2.out',
         x: COUNTRY_HIGHLIGHT_SCALE,
@@ -295,22 +280,22 @@
     }
   }
 
-  let selectedGroup : THREE.Group | undefined = undefined
+  let selectedCountry : THREE.Object3D | undefined = undefined
   let cameraPos : THREE.Vector3 | null = null
-  const selectGroup = (group?: THREE.Group) => {
-    // Second click on group toggles it off
-    if (selectedGroup) {
-      highlightGroup()
-      selectedGroup.children[0].material = countryMaterial
-      if (group && group.name === selectedGroup.name) {
-        selectedGroup = undefined
+  const selectCountry = (country?: THREE.Object3D) => {
+    // Second click on country toggles it off
+    if (selectedCountry) {
+      highlightCountry()
+      selectedCountry.material = countryMaterial
+      if (country && country.name === selectedCountry.name) {
+        selectedCountry = undefined
         return
       }
     }
-    highlightGroup(group)
-    if (group) {
-      group.children[0].material = selectedCountryMaterial
-      cameraPos = getCameraCenterOnPos(group.children[0])
+    highlightCountry(country)
+    if (country) {
+      country.material = selectedCountryMaterial
+      cameraPos = getCameraCenterOnPos(country)
       gsap.to(camera.position, {
         duration: 0.5,
         ease: 'power2.inOut',
@@ -319,7 +304,7 @@
         z: cameraPos.z,
       })
     }
-    selectedGroup = group
+    selectedCountry = country
   }
 
   /**
@@ -334,39 +319,41 @@
 
   canvas.addEventListener('click', e => {
     // Disable click interactions while spinning the globe
-    if (isSpinning) {
+    if (isSpinning || !countries) {
       return
     }
     mouse.x = e.clientX / sizes.width * 2 - 1
     mouse.y = - (e.clientY / sizes.height) * 2 + 1
-    const countriesFacingCamera = countryIntersectionObjects.filter((mesh: THREE.Object3D) => {
-      return mesh.geometry.boundingSphere.distanceToPoint(camera.position) < COUNTRY_HOVER_DISTANCE_FROM_CAMERA
-    })
+    const countriesFacingCamera = getObjectsFacingCamera(countryIntersectionObjects)
     raycaster.setFromCamera(mouse, camera)
-    const intersectedCountries = raycaster.intersectObjects(countriesFacingCamera)
-    const group : THREE.Group | undefined = intersectedCountries.length
-      ? countryGroups.find(g => g.name === intersectedCountries[0].object.name)
+    const intersectedCountries = raycaster.intersectObjects(countriesFacingCamera, false)
+    const country : THREE.Object3D | undefined = intersectedCountries.length
+      ? countries.children.find(country => country.name === intersectedCountries[0].object.name)
       : undefined
-    selectGroup(group)
+    selectCountry(country)
   })
+
+  const getObjectsFacingCamera = (objects: THREE.Object3D[]) => {
+    return objects.filter((object: THREE.Object3D) => {
+      return object.geometry.boundingSphere.distanceToPoint(camera.position) < DISTANCE_TO_GLOBE_EDGE
+    })
+  }
 
   const tick = () => {
 
     // Hover effect
-    if (hoverEnabled && countryGroups.length) {
-      const countriesFacingCamera = countryIntersectionObjects.filter(mesh => {
-        return mesh.geometry.boundingSphere.distanceToPoint(camera.position) < COUNTRY_HOVER_DISTANCE_FROM_CAMERA
-      })
+    if (hoverEnabled && countries) {
+      const countriesFacingCamera = getObjectsFacingCamera(countryIntersectionObjects)
       raycaster.setFromCamera(mouse, camera)
-      const intersectedCountries = raycaster.intersectObjects(countriesFacingCamera)
-      const group : THREE.Group | undefined = intersectedCountries.length
-        ? countryGroups.find(g => g.name === intersectedCountries[0].object.name)
+      const intersectedCountries = raycaster.intersectObjects(countriesFacingCamera, false)
+      const country : THREE.Object3D | undefined = intersectedCountries.length
+        ? countries.children.find(country => country.name === intersectedCountries[0].object.name)
         : undefined
       if (tooltip) {
-        tooltip.innerHTML = group?.name ?? ''
+        tooltip.innerHTML = country?.name ?? ''
       }
-      if (!selectedGroup) {
-        highlightGroup(group)
+      if (!selectedCountry) {
+        highlightCountry(country)
       }
     }
 
