@@ -8,7 +8,10 @@
     - hexed polygons might work too: https://vasturiano.github.io/three-globe/example/hexed-polygons/
 - [✔] Remove CPU/GPU-intensive features on small screens
 - [✔] Center on selected country
-- [ ] Clicks interfere with orbit controls (countries get selected as spinnign the globe)
+  - [ ] Centering on selected country creates a small "zoom in" effect because the
+        camera doesn't arc around the globe but moves directly to the new position.
+        Maybe the OrbitControls.dollyIn() / .dollyOut() can fix this?
+- [✔] Clicks interfere with orbit controls (countries get selected as spinnign the globe)
 - [ ] Rebuild in R3F
 - [ ] show country name on hover
 - [ ] Plot points

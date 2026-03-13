@@ -46,6 +46,32 @@
   controls.minPolarAngle=1
   controls.maxPolarAngle=1.8
 
+  // Set a flag when orbit controls are spinning the camera
+  // around the scene. This flag is used to disable click
+  // events while spinning the globe, which can lead to
+  // countries being selected as the user is rotating.
+  // The CLICK_DISTANCE_TOLERANCE defines how far a click
+  // can "drag" the globe without disabling the click. This
+  // is necessary because the click can be extremely precise
+  // and most users will unintentionally move the mouse a
+  // little while clicking.
+  let lastCameraPos : THREE.Vector3 = camera.position.clone()
+  let isSpinning = false
+  const CLICK_DISTANCE_TOLERANCE = 30
+  controls.addEventListener('start', () => {
+    lastCameraPos = camera.position.clone()
+    isSpinning = true
+  })
+  controls.addEventListener('end', () => {
+    if (lastCameraPos.distanceTo(camera.position) < CLICK_DISTANCE_TOLERANCE) {
+      isSpinning = false
+    } else {
+      setTimeout(() => {
+        isSpinning = false
+      }, 1)
+    }
+  })
+
   scene.add(new THREE.AmbientLight('0xffffff', 0.2))
   const pointLight1 = new THREE.PointLight(0xffffff, 3.0)
   pointLight1.position.set(EARTH_RADIUS * 2, EARTH_RADIUS * 2, EARTH_RADIUS * 2)
@@ -307,6 +333,10 @@
   }
 
   canvas.addEventListener('click', e => {
+    // Disable click interactions while spinning the globe
+    if (isSpinning) {
+      return
+    }
     mouse.x = e.clientX / sizes.width * 2 - 1
     mouse.y = - (e.clientY / sizes.height) * 2 + 1
     const countriesFacingCamera = countryIntersectionObjects.filter((mesh: THREE.Object3D) => {
