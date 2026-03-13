@@ -1,6 +1,6 @@
 <div class="relative w-full h-full">
   <canvas class="map w-full h-full"></canvas>
-  <span id="tooltip" class="fixed font-mono font-bold text-sm uppercase"></span>
+  <span id="tooltip" class="fixed font-mono font-bold text-sm uppercase text-shadow-sm text-shadow-black"></span>
 </div>
 
 <script>
@@ -20,7 +20,7 @@
 
   const COUNTRY_SCALE = 1.06
   const COUNTRY_HOVER_SCALE = 1.09
-  const COUNTRY_SCALE_SPEED = 0.004
+  const COUNTRY_SCALE_SPEED = new THREE.Vector3(0.004, 0.004, 0.004)
 
   const SCREEN_WIDTH_LG = 1200
 
@@ -128,13 +128,14 @@
   //   depthWrite: true,
   // })
   const highlightedCountryMaterial = countryMaterial.clone()
-  highlightedCountryMaterial.color.set(0xff0000)
+  highlightedCountryMaterial.color.set(0x880000)
+  const selectedCountryMaterial = countryMaterial.clone()
+  selectedCountryMaterial.color.set(0xff0000)
   const borderMaterial = new THREE.LineBasicMaterial({
     color: 0x6586b5,
   })
   let countryGroups : THREE.Group[] = []
   let countryIntersectionObjects : THREE.Object3D[] = []
-  let activeGroup : {time: number, group: THREE.Object3D} | null = null
   const gltfLoader = new GLTFLoader()
   gltfLoader.load(
     '/globe-country-boundaries-surface-only.glb',
@@ -220,6 +221,7 @@
   let hoverEnabled = true
 
   const mouse = new THREE.Vector2()
+  const raycaster = new THREE.Raycaster()
   canvas.addEventListener('mousemove', e => {
     mouse.x = e.clientX / sizes.width * 2 - 1
     mouse.y = - (e.clientY / sizes.height) * 2 + 1
@@ -234,55 +236,77 @@
     mouse.y = -10
   })
 
-  const timer = new THREE.Timer()
+
+  let highlightedGroup : THREE.Group | undefined = undefined
+  const highlightGroup = (group?: THREE.Group) => {
+    if (highlightedGroup) {
+      highlightedGroup.children[0].material = countryMaterial
+    }
+    if (group) {
+      group.children[0].material = highlightedCountryMaterial
+    }
+    highlightedGroup = group
+  }
+
+  let selectedGroup : THREE.Group | undefined = undefined
+  const selectGroup = (group?: THREE.Group) => {
+    // Second click on group toggles it off
+    if (selectedGroup) {
+      selectedGroup.children[0].material = countryMaterial
+      selectedGroup = undefined
+      return
+    }
+    highlightGroup(group)
+    if (group) {
+      group.children[0].material = selectedCountryMaterial
+    }
+    selectedGroup = group
+  }
+
+  canvas.addEventListener('click', e => {
+    mouse.x = e.clientX / sizes.width * 2 - 1
+    mouse.y = - (e.clientY / sizes.height) * 2 + 1
+    const countriesFacingCamera = countryIntersectionObjects.filter((mesh: THREE.Object3D) => {
+      return mesh.geometry.boundingSphere.distanceToPoint(camera.position) < COUNTRY_HOVER_DISTANCE_FROM_CAMERA
+    })
+    raycaster.setFromCamera(mouse, camera)
+    const intersectedCountries = raycaster.intersectObjects(countriesFacingCamera)
+    const group : THREE.Group | undefined = intersectedCountries.length
+      ? countryGroups.find(g => g.name === intersectedCountries[0].object.name)
+      : undefined
+    selectGroup(group)
+  })
 
   const tick = () => {
 
     // Hover effect
     if (hoverEnabled && countryGroups.length) {
-      const elapsed = timer.getElapsed()
       const countriesFacingCamera = countryIntersectionObjects.filter(mesh => {
         return mesh.geometry.boundingSphere.distanceToPoint(camera.position) < COUNTRY_HOVER_DISTANCE_FROM_CAMERA
       })
-      const raycaster = new THREE.Raycaster()
       raycaster.setFromCamera(mouse, camera)
       const intersectedCountries = raycaster.intersectObjects(countriesFacingCamera)
-      if (intersectedCountries.length) {
-        const group : THREE.Group = countryGroups.find(g => g.name === intersectedCountries[0].object.name)
-        if (
-            (!activeGroup || activeGroup.group.name != group.name)
-        ) {
-          if (activeGroup) {
-            activeGroup.group.children[0].material = countryMaterial
-          }
-          activeGroup = {
-            time: elapsed,
-            group,
-          }
-          activeGroup.group.children[0].material = highlightedCountryMaterial
-        }
-        tooltip.innerHTML = activeGroup.group.name
-      } else if (activeGroup) {
-        activeGroup.group.children[0].material = countryMaterial
-        activeGroup = null
-        tooltip.innerHTML = ''
+      const group : THREE.Group | undefined = intersectedCountries.length
+        ? countryGroups.find(g => g.name === intersectedCountries[0].object.name)
+        : undefined
+      if (tooltip) {
+        tooltip.innerHTML = group?.name ?? ''
       }
-      if (activeGroup && activeGroup.group.scale.x < COUNTRY_HOVER_SCALE) {
-          activeGroup.group.scale.x += COUNTRY_SCALE_SPEED
-          activeGroup.group.scale.y += COUNTRY_SCALE_SPEED
-          activeGroup.group.scale.z += COUNTRY_SCALE_SPEED
+      if (!selectedGroup) {
+        highlightGroup(group)
       }
-      countryGroups.forEach(group => {
-        if (activeGroup && activeGroup.group.name == group.name) {
-          return
-        }
-        if (group.scale.x > COUNTRY_SCALE) {
-          group.scale.x -= COUNTRY_SCALE_SPEED
-          group.scale.y -= COUNTRY_SCALE_SPEED
-          group.scale.z -= COUNTRY_SCALE_SPEED
-        }
-      })
     }
+    if (highlightedGroup && highlightedGroup.scale.x < COUNTRY_HOVER_SCALE) {
+      highlightedGroup.scale.add(COUNTRY_SCALE_SPEED)
+    }
+    countryGroups.forEach(group => {
+      if (highlightedGroup && highlightedGroup.name == group.name) {
+        return
+      }
+      if (group.scale.x > COUNTRY_SCALE) {
+        group.scale.sub(COUNTRY_SCALE_SPEED)
+      }
+    })
 
     controls.update()
     renderer.render(scene, camera)
