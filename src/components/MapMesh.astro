@@ -54,7 +54,7 @@
   // Opaque globe
   const globe = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS * 0.99, 64, 64),
-    new THREE.MeshBasicMaterial({ color: 'black' })
+    new THREE.MeshBasicMaterial({ color: 0x330000 })
   )
   scene.add(globe)
 
@@ -85,7 +85,7 @@
   const grid = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS * 1.02, 32, 32),
     new THREE.MeshBasicMaterial({
-      color: 0x3b82f6,
+      color: 0xff0000,
       wireframe: true,
       transparent: true,
       opacity: 0.08
@@ -97,9 +97,9 @@
   const glow = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS * 1.05, 64, 64),
     new THREE.MeshStandardMaterial({
-      color: 0x60a5fa,
+      color: 0xff0000,
       transparent: true,
-      opacity: 0.05,
+      opacity: 0.03,
       side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
@@ -108,7 +108,8 @@
   scene.add(glow)
 
   const countryMaterial = new THREE.MeshBasicMaterial({
-    color: 0x2B3345,
+    color: 0xffbbbb,
+    // color: 0x2B3345,
   })
   const countryBGMaterial = new THREE.MeshBasicMaterial({
     visible: false,
@@ -128,11 +129,12 @@
   //   depthWrite: true,
   // })
   const highlightedCountryMaterial = countryMaterial.clone()
-  highlightedCountryMaterial.color.set(0x880000)
+  highlightedCountryMaterial.color.set(0xff8888)
   const selectedCountryMaterial = countryMaterial.clone()
-  selectedCountryMaterial.color.set(0xff0000)
+  selectedCountryMaterial.color.set(0xcc3333)
   const borderMaterial = new THREE.LineBasicMaterial({
-    color: 0x6586b5,
+    color: 0x333333,
+    // color: 0x6586b5,
   })
   let countryGroups : THREE.Group[] = []
   let countryIntersectionObjects : THREE.Object3D[] = []
@@ -190,7 +192,7 @@
 
   const environment = new RoomEnvironment();
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
-  scene.background = new THREE.Color( 0x000000 );
+  scene.background = new THREE.Color( 0x330000 );
   scene.environment = pmremGenerator.fromScene(environment, 0.2).texture;
 
   const resize = () => {
