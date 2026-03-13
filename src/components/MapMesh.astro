@@ -252,6 +252,7 @@
   const selectGroup = (group?: THREE.Group) => {
     // Second click on group toggles it off
     if (selectedGroup) {
+      highlightGroup()
       selectedGroup.children[0].material = countryMaterial
       selectedGroup = undefined
       return
