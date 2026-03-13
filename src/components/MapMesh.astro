@@ -78,14 +78,14 @@
   const pointLight1 = new THREE.PointLight(0xffffff, 3.0)
   pointLight1.position.set(EARTH_RADIUS * 2, EARTH_RADIUS * 2, EARTH_RADIUS * 2)
   scene.add(pointLight1)
-  const pointLight2 = new THREE.PointLight(0x4f46e5, 1.0) /* blue rim light */
+  const pointLight2 = new THREE.PointLight(0xe54600, 1.0) /* rim light */
   pointLight2.position.set(-200, -100, -100)
   scene.add(pointLight2)
 
   // Opaque globe
   const globe = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS * 0.99, 64, 64),
-    new THREE.MeshBasicMaterial({ color: 'black' })
+    new THREE.MeshBasicMaterial({ color: 0x330000 })
   )
   scene.add(globe)
 
@@ -93,7 +93,7 @@
   const surface = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 64, 64),
     new THREE.MeshPhysicalMaterial({
-      color: 0x000814,
+      color: 0x000000,
       roughness: 0.02,
       metalness: 0.3,
       transmission: 0.7,
@@ -115,10 +115,10 @@
   const grid = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS * 1.02, 32, 32),
     new THREE.MeshBasicMaterial({
-      color: 0x3b82f6,
+      color: 0xff0000,
       wireframe: true,
       transparent: true,
-      opacity: 0.08
+      opacity: 0.03
     })
   )
   scene.add(grid)
@@ -127,9 +127,9 @@
   const glow = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS * 1.05, 64, 64),
     new THREE.MeshStandardMaterial({
-      color: 0x60a5fa,
+      color: 0xfaa560,
       transparent: true,
-      opacity: 0.05,
+      opacity: 0.01,
       side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
@@ -140,26 +140,24 @@
   const countryBGMaterial = new THREE.MeshBasicMaterial({
     visible: false,
   })
-  const countryMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xccbbbb,
-    roughness: 0.02,
-    metalness: 0.3,
-    transmission: 0.7,
-    thickness: 15,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.0,
-    ior: 1.5,
-    transparent: true,
-    opacity: 1.0,
-    envMapIntensity: 1.5,
-    depthWrite: true,
+  // const countryMaterial = new THREE.MeshPhysicalMaterial({
+  //   color: 0x330000,
+  //   roughness: 0.85,
+  //   metalness: 0.8,
+  //   transmission: 0.7,
+  //   ior: 1.5,
+  //   envMapIntensity: 1.5,
+  //   depthWrite: true,
+  // })
+  const countryMaterial = new THREE.MeshBasicMaterial({
+    color: 0x660000,
   })
   const highlightedCountryMaterial = countryMaterial.clone()
-  highlightedCountryMaterial.color.set(0x880000)
+  highlightedCountryMaterial.color.set(0xbb0000)
   const selectedCountryMaterial = countryMaterial.clone()
-  selectedCountryMaterial.color.set(0xdd0000)
+  selectedCountryMaterial.color.set(0xffaa00)
   const borderMaterial = new THREE.LineBasicMaterial({
-    color: 0x443333,
+    color: 0x887733,
   })
   let countries : THREE.Object3D | null = null
   let countryIntersectionObjects : THREE.Object3D[] = []
@@ -204,7 +202,7 @@
 
   const environment = new RoomEnvironment();
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
-  scene.background = new THREE.Color( 0x000000 );
+  scene.background = new THREE.Color( 0x220000);
   scene.environment = pmremGenerator.fromScene(environment, 0.2).texture;
 
   const resize = () => {

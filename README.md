@@ -13,7 +13,7 @@
         Maybe the OrbitControls.dollyIn() / .dollyOut() can fix this?
 - [✔] Clicks interfere with orbit controls (countries get selected as spinnign the globe)
 - [ ] Rebuild in R3F
-- [ ] show country name on hover
+- [✔] show country name on hover
 - [ ] Plot points
 - [ ] Arcs
 - [ ] Bars extending outwards
