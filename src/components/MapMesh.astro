@@ -141,7 +141,7 @@
     visible: false,
   })
   // const countryMaterial = new THREE.MeshPhysicalMaterial({
-  //   color: 0x330000,
+  //   color: 0xbb0000,
   //   roughness: 0.85,
   //   metalness: 0.8,
   //   transmission: 0.7,
@@ -150,14 +150,14 @@
   //   depthWrite: true,
   // })
   const countryMaterial = new THREE.MeshBasicMaterial({
-    color: 0x660000,
+    color: 0xbb0000,
   })
   const highlightedCountryMaterial = countryMaterial.clone()
-  highlightedCountryMaterial.color.set(0xbb0000)
+  highlightedCountryMaterial.color.set(0xffaa00)
   const selectedCountryMaterial = countryMaterial.clone()
   selectedCountryMaterial.color.set(0xffaa00)
   const borderMaterial = new THREE.LineBasicMaterial({
-    color: 0x887733,
+    color: 0x000000,
   })
   let countries : THREE.Object3D | null = null
   let countryIntersectionObjects : THREE.Object3D[] = []
@@ -167,7 +167,7 @@
     gltf => {
       countries = gltf.scene
       scene.add(countries)
-      countries.children.forEach((country: THREE.Country3D) => {
+      countries.children.forEach((country: THREE.Object3D) => {
         country.material = countryMaterial
         country.scale.multiplyScalar(COUNTRY_SCALE)
 
