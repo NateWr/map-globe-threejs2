@@ -279,7 +279,6 @@
   }
 
   let selectedCountry : THREE.Object3D | undefined = undefined
-  let cameraPos : THREE.Vector3 | null = null
   const selectCountry = (country?: THREE.Object3D) => {
     // Second click on country toggles it off
     if (selectedCountry) {
@@ -293,27 +292,11 @@
     highlightCountry(country)
     if (country) {
       country.material = selectedCountryMaterial
-      const angles = getObjectYawPitch(country)
-      let targetAzimuthAngle = yawToAzimuthAngle(angles[0])
-      const distance = Math.abs(targetAzimuthAngle - controls.getAzimuthalAngle())
-      let rotateLeft = 0
-      if (controls.getAzimuthalAngle() > targetAzimuthAngle) {
-        if (distance > Math.PI) {
-          rotateLeft = (Math.PI - controls.getAzimuthalAngle()) + (Math.PI - Math.abs(targetAzimuthAngle))
-        } else {
-          rotateLeft = targetAzimuthAngle - controls.getAzimuthalAngle()
-        }
-      } else {
-        if (distance > Math.PI) {
-          rotateLeft = -1 * (Math.PI - Math.abs(controls.getAzimuthalAngle()) + (Math.PI - Math.abs(targetAzimuthAngle)))
-        } else {
-          rotateLeft = distance
-        }
-      }
-      controls.rotateLeft(- rotateLeft)
+      lookAt(country)
     }
     selectedCountry = country
   }
+
   /**
    * Get the yaw and pitch of a country relative to the
    * scene origin
@@ -337,6 +320,30 @@
     return yaw < 0
       ? Math.PI + yaw
       : -1 * Math.PI + yaw
+  }
+
+  /**
+   * Rotate the controls to focus on a single country
+   */
+  const lookAt = (country: THREE.Object3D) => {
+    const angles = getObjectYawPitch(country)
+    let targetAzimuthAngle = yawToAzimuthAngle(angles[0])
+    const distance = Math.abs(targetAzimuthAngle - controls.getAzimuthalAngle())
+    let rotateLeft = 0
+    if (controls.getAzimuthalAngle() > targetAzimuthAngle) {
+      if (distance > Math.PI) {
+        rotateLeft = (Math.PI - controls.getAzimuthalAngle()) + (Math.PI - Math.abs(targetAzimuthAngle))
+      } else {
+        rotateLeft = targetAzimuthAngle - controls.getAzimuthalAngle()
+      }
+    } else {
+      if (distance > Math.PI) {
+        rotateLeft = -1 * (Math.PI - Math.abs(controls.getAzimuthalAngle()) + (Math.PI - Math.abs(targetAzimuthAngle)))
+      } else {
+        rotateLeft = distance
+      }
+    }
+    controls.rotateLeft(- rotateLeft)
   }
 
   canvas.addEventListener('click', e => {
