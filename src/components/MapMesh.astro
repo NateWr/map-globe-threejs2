@@ -309,7 +309,8 @@
     const dir = new THREE.Vector3()
     dir.subVectors(origin, object.geometry.boundingSphere.center).normalize()
     const yaw = Math.atan2(dir.x, dir.z)
-    return [yaw, 0]
+    const pitch = Math.PI - (Math.atan2(Math.sqrt(dir.z * dir.z + dir.x * dir.x), dir.y))
+    return [yaw, pitch]
   }
 
   /**
@@ -327,6 +328,7 @@
    */
   const lookAt = (country: THREE.Object3D) => {
     const angles = getObjectYawPitch(country)
+
     let targetAzimuthAngle = yawToAzimuthAngle(angles[0])
     const distance = Math.abs(targetAzimuthAngle - controls.getAzimuthalAngle())
     let rotateLeft = 0
@@ -344,6 +346,10 @@
       }
     }
     controls.rotateLeft(- rotateLeft)
+
+    const targetPolarAngle = Math.max(1.0, Math.min(1.8, angles[1]))
+    const rotateUp = controls.getPolarAngle() - targetPolarAngle
+    controls.rotateUp(rotateUp)
   }
 
   canvas.addEventListener('click', e => {
