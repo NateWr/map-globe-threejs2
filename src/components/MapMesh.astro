@@ -20,13 +20,12 @@
    * side of the globe
    */
   const DISTANCE_TO_GLOBE_EDGE = 250
-
   const COUNTRY_SCALE = 1.06
   const COUNTRY_HIGHLIGHT_SCALE = 1.09
-
   const SCREEN_WIDTH_LG = 1200
-
   const CAMERA_DISTANCE = EARTH_RADIUS * 3
+  const CONTROLS_DAMPING_FACTOR = 0.05
+  const CONTROLS_DAMPING_FACTOR_STRONG = 0.12
 
   const canvas = document.querySelector('canvas.map')
 
@@ -280,18 +279,21 @@
 
   let selectedCountry : THREE.Object3D | undefined = undefined
   const selectCountry = (country?: THREE.Object3D) => {
-    // Second click on country toggles it off
+    // Unset any previously selected country
     if (selectedCountry) {
       highlightCountry()
       selectedCountry.material = countryMaterial
+      // Second click on country toggles it off
       if (country && country.name === selectedCountry.name) {
         selectedCountry = undefined
+        controls.dampingFactor = CONTROLS_DAMPING_FACTOR
         return
       }
     }
     highlightCountry(country)
     if (country) {
       country.material = selectedCountryMaterial
+      controls.dampingFactor = CONTROLS_DAMPING_FACTOR_STRONG
       lookAt(country)
     }
     selectedCountry = country
