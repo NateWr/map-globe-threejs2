@@ -9,8 +9,8 @@
   import * as THREE from 'three'
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
   import { GLTFLoader } from 'three/examples/jsm/Addons.js';
-  import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   import { EARTH_RADIUS } from '../utils/geojson';
+  import FakeGlowMaterial from '../utils/FakeGlowMaterial'
 
   /*
    * Distance to the visible edge of the globe
@@ -73,6 +73,25 @@
     }
   })
 
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+  })
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.setSize(sizes.width, sizes.height)
+  renderer.setPixelRatio(sizes.pixelRatio)
+
+  const cubeTextureLoader = new THREE.CubeTextureLoader()
+  cubeTextureLoader.setPath('milky-way-cube-map/')
+  const textureEnvMap = cubeTextureLoader.load([
+    'px.jpg',
+    'nx.jpg',
+    'py.jpg',
+    'ny.jpg',
+    'pz.jpg',
+    'nz.jpg',
+  ])
+
   scene.add(new THREE.AmbientLight('0xffffff', 0.2))
   const pointLight1 = new THREE.PointLight(0xffffff, 3.0)
   pointLight1.position.set(EARTH_RADIUS * 2, EARTH_RADIUS * 2, EARTH_RADIUS * 2)
@@ -84,26 +103,28 @@
   // Opaque globe
   const globe = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS * 0.99, 64, 64),
-    new THREE.MeshBasicMaterial({ color: 0x330000 })
+    new THREE.MeshBasicMaterial({ color: 0x000000 })
   )
-  scene.add(globe)
+  if (sizes.width <= SCREEN_WIDTH_LG) {
+    scene.add(globe)
+  }
 
   // Glossy surface
   const surface = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 64, 64),
     new THREE.MeshPhysicalMaterial({
-      color: 0x000000,
-      roughness: 0.02,
-      metalness: 0.3,
-      transmission: 0.7,
+      color: 0xbb9900,
+      roughness: 0.5,
+      metalness: 0.8,
       thickness: 15,
       clearcoat: 1.0,
       clearcoatRoughness: 0.0,
       ior: 1.5,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.5,
       side: THREE.DoubleSide,
-      envMapIntensity: 1.5,
+      envMap: textureEnvMap,
+      envMapIntensity: 0.5,
     })
   )
   if (sizes.width >= SCREEN_WIDTH_LG) {
@@ -112,51 +133,56 @@
 
   // Holographic grid
   const grid = new THREE.Mesh(
-    new THREE.SphereGeometry(EARTH_RADIUS * 1.02, 32, 32),
+    new THREE.SphereGeometry(EARTH_RADIUS * 1.05, 32, 32),
     new THREE.MeshBasicMaterial({
-      color: 0xff0000,
+      color: 0xffea00,
       wireframe: true,
       transparent: true,
-      opacity: 0.03
+      opacity: 0.035
     })
   )
   scene.add(grid)
 
-  // Glowing rim (Fresnel Simulation)
-  const glow = new THREE.Mesh(
-    new THREE.SphereGeometry(EARTH_RADIUS * 1.05, 64, 64),
-    new THREE.MeshStandardMaterial({
-      color: 0xfaa560,
-      transparent: true,
-      opacity: 0.01,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
+  // Outer glow
+  const outerGlow = new THREE.Mesh(
+    new THREE.SphereGeometry(EARTH_RADIUS * 2, 64, 64),
+    new FakeGlowMaterial({
+      glowColor: 0x331500,
+      opacity: 1,
+      glowInternalRadius: 2,
     })
   )
-  scene.add(glow)
+  scene.add(outerGlow)
 
   const countryBGMaterial = new THREE.MeshBasicMaterial({
     visible: false,
   })
   // const countryMaterial = new THREE.MeshPhysicalMaterial({
-  //   color: 0xbb0000,
-  //   roughness: 0.85,
-  //   metalness: 0.8,
-  //   transmission: 0.7,
-  //   ior: 1.5,
-  //   envMapIntensity: 1.5,
-  //   depthWrite: true,
+  //   color: 0xffe5bb,
+  //   roughness: 0.75,
+  //   metalness: 0.15,
+  //   // transmission: 0.5,
+  //   // ior: 1.5,
+  //   // envMap: textureEnvMap,
+  //   // envMapIntensity: 10,
+  //   transparent: true,
+  //   opacity: 0.75
+  //   // clearcoat: 1.0,
+  //   // clearcoatRoughness: 0,
+  //   // envMapIntensity: 1.5,
+  //   // depthWrite: true,
   // })
   const countryMaterial = new THREE.MeshBasicMaterial({
-    color: 0xbb0000,
+    color: 0xffea00,
+    transparent: true,
+    opacity: 0.2
   })
   const highlightedCountryMaterial = countryMaterial.clone()
-  highlightedCountryMaterial.color.set(0xffaa00)
+  highlightedCountryMaterial.opacity = 0.4
   const selectedCountryMaterial = countryMaterial.clone()
-  selectedCountryMaterial.color.set(0xffaa00)
+  selectedCountryMaterial.opacity = 0.8
   const borderMaterial = new THREE.LineBasicMaterial({
-    color: 0x000000,
+    color: 0x997c00,
   })
   let countries : THREE.Object3D | null = null
   let countryIntersectionObjects : THREE.Object3D[] = []
@@ -191,19 +217,6 @@
     }
   )
 
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-  })
-  renderer.toneMapping = THREE.ACESFilmicToneMapping
-  renderer.setSize(sizes.width, sizes.height)
-  renderer.setPixelRatio(sizes.pixelRatio)
-
-  const environment = new RoomEnvironment();
-  const pmremGenerator = new THREE.PMREMGenerator(renderer);
-  scene.background = new THREE.Color( 0x220000);
-  scene.environment = pmremGenerator.fromScene(environment, 0.2).texture;
-
   const resize = () => {
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -213,8 +226,12 @@
       if (!surface.parent) {
         scene.add(surface)
       }
+      if (!globe.parent) {
+        scene.add(globe)
+      }
     } else {
       scene.remove(surface)
+      scene.remove(globe)
     }
 
     renderer.setSize(sizes.width, sizes.height)
