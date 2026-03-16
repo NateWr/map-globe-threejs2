@@ -92,6 +92,8 @@
     'nz.jpg',
   ])
 
+  scene.background = new THREE.Color(0x00111a)
+
   scene.add(new THREE.AmbientLight('0xffffff', 0.2))
   const pointLight1 = new THREE.PointLight(0xffffff, 3.0)
   pointLight1.position.set(EARTH_RADIUS * 2, EARTH_RADIUS * 2, EARTH_RADIUS * 2)
@@ -113,7 +115,7 @@
   const surface = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 64, 64),
     new THREE.MeshPhysicalMaterial({
-      color: 0xbb9900,
+      color: 0x00aa88,
       roughness: 0.75,
       metalness: 1,
       thickness: 15,
@@ -147,9 +149,9 @@
   const outerGlow = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS * 2, 64, 64),
     new FakeGlowMaterial({
-      glowColor: 0x331500,
-      opacity: 1,
-      glowInternalRadius: 2,
+      glowColor: 0x00332a,
+      opacity: 0.75,
+      glowInternalRadius: 4,
     })
   )
   scene.add(outerGlow)
@@ -175,14 +177,14 @@
   const countryMaterial = new THREE.MeshBasicMaterial({
     color: 0xffea00,
     transparent: true,
-    opacity: 0.2
+    opacity: 0.25
   })
   const highlightedCountryMaterial = countryMaterial.clone()
-  highlightedCountryMaterial.opacity = 0.4
+  highlightedCountryMaterial.opacity = 0.5
   const selectedCountryMaterial = countryMaterial.clone()
-  selectedCountryMaterial.opacity = 0.8
+  selectedCountryMaterial.opacity = 0.9
   const borderMaterial = new THREE.LineBasicMaterial({
-    color: 0x997c00,
+    color: 0xaa9d00,
   })
   let countries : THREE.Object3D | null = null
   let countryIntersectionObjects : THREE.Object3D[] = []
