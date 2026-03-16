@@ -17,6 +17,12 @@
 - [ ] Plot points
 - [ ] Arcs
 - [ ] Bars extending outwards
-- [ ] Better environment for reflections
+- [✔] Better environment for reflections
 - [ ] GUI for configuration
 - [ ] Try different styles
+
+# Credits
+
+- Space env map is modified from this [milky way image](https://commons.wikimedia.org/wiki/File:ESO_-_Milky_Way.jpg)
+- Uses [FakeGlowMaterial](https://github.com/ektogamat/fake-glow-material-threejs) from @ektogamat
+- Inspired by [Seismic3D](https://shahnab.github.io/Seismic3D/)
