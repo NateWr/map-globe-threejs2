@@ -66,6 +66,18 @@ export default function Globe({
           opacity={0.035}
         />
       </mesh>
+
+      <mesh>
+        <sphereGeometry args={[EARTH_RADIUS * 1.005, 64, 64]} />
+        <meshStandardMaterial
+          color="#bb9900"
+          transparent
+          opacity={0.5}
+          side={THREE.DoubleSide}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
     </>
   )
 }
