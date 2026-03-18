@@ -8,15 +8,15 @@
     - hexed polygons might work too: https://vasturiano.github.io/three-globe/example/hexed-polygons/
 - [✔] Remove CPU/GPU-intensive features on small screens
 - [✔] Center on selected country
-  - [ ] Centering on selected country creates a small "zoom in" effect because the
-        camera doesn't arc around the globe but moves directly to the new position.
-        Maybe the OrbitControls.dollyIn() / .dollyOut() can fix this?
 - [✔] Clicks interfere with orbit controls (countries get selected as spinnign the globe)
 - [ ] Rebuild in R3F
+  - [ ] tooltip
+  - [✔] click to select country
   - [ ] Env map
   - [ ] FakeGlowMaterial
-  - [ ] Load GLB
-  - [ ] Check if onPointer events for each mesh create multiple raycasts
+  - [✔] Load GLB
+  - [✘] Check if onPointer events for each mesh create multiple raycasts
+  - [ ] Prevent hover effects on touch devices?
 - [✔] show country name on hover
 - [ ] Plot points
 - [ ] Arcs
