@@ -13,11 +13,16 @@
         Maybe the OrbitControls.dollyIn() / .dollyOut() can fix this?
 - [✔] Clicks interfere with orbit controls (countries get selected as spinnign the globe)
 - [ ] Rebuild in R3F
+  - [ ] Env map
+  - [ ] FakeGlowMaterial
+  - [ ] Load GLB
+  - [ ] Check if onPointer events for each mesh create multiple raycasts
 - [✔] show country name on hover
 - [ ] Plot points
 - [ ] Arcs
 - [ ] Bars extending outwards
 - [✔] Better environment for reflections
+  - [ ] Look at Seismic 3D to see how they did "stars"
 - [ ] GUI for configuration
 - [ ] Try different styles
 

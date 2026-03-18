@@ -1,9 +1,10 @@
 ---
 import MapOutline from '../components/MapOutline.astro';
 import MapMesh from '../components/MapMesh.astro';
+import App from '../components/MapR3F.tsx';
 import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<MapMesh />
+	<App client:load />
 </Layout>
