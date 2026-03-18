@@ -1,0 +1,1 @@
+export const SCREEN_WIDTH_LG = 1200

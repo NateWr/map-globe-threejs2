@@ -12,13 +12,13 @@ const COUNTRY_HIGHLIGHT_OPACITY = 0.5
 const COUNTRY_SELECTED_OPACITY = 0.9
 const DISTANCE_TO_GLOBE_EDGE = 250
 
-export function CountryModel({
+export function Country({
   country,
   selected,
   setSelected
 } : {
   country: Object3D,
-  selected: Object3D,
+  selected: Object3D | null,
   setSelected: Function
 }) {
   const [highlighted, setHighlighted] = useState(false)
