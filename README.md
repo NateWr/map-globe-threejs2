@@ -12,7 +12,7 @@
 - [ ] Rebuild in R3F
   - [ ] tooltip
   - [✔] click to select country
-  - [ ] Env map
+  - [✔] Env map
   - [ ] FakeGlowMaterial
   - [✔] Load GLB
   - [✘] Check if onPointer events for each mesh create multiple raycasts
