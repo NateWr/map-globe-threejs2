@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { type Object3D } from 'three'
+import { type Object3D, type Vector2 } from 'three'
 import { Canvas } from "@react-three/fiber";
 import { EARTH_RADIUS } from "../utils/geojson";
 import { useEffect, useState } from "react";
@@ -15,8 +15,10 @@ const LIGHT_2_POS = [- EARTH_RADIUS * 2, - EARTH_RADIUS, - EARTH_RADIUS]
 export default function App() {
 
   const [isSpinning, setIsSpinning] = useState(false)
+  const [hoverEnabled, setHoverEnabled] = useState(false)
+  const [mouse, setMouse] = useState<{x: number, y: number}>({x: 0, y: 0})
   const [screen, setScreen] = useState<[number, number]>([0, 0])
-  const [selected, setSelected] = useState<Object3D | null>(null)
+  const [selected, setSelected] = useState<THREE.Mesh | null>(null)
 
   useEffect(() => {
     const updateScreen = () => {
@@ -37,6 +39,16 @@ export default function App() {
       onPointerMissed={() => {
         setSelected(null)
       }}
+      onMouseMove={(e) => {
+        setMouse({
+          x: (e.clientX / screen[0]) * 2 - 1,
+          y: - (e.clientY / screen[1]) * 2 + 1,
+        })
+        setHoverEnabled(true)
+      }}
+      onTouchMove={() => {
+        setHoverEnabled(false)
+      }}
     >
       <color attach="background" args={['#1a1100']} />
       <Controls
@@ -51,6 +63,8 @@ export default function App() {
         screen={screen}
       />
       <Countries
+        hoverEnabled={hoverEnabled}
+        isSpinning={isSpinning}
         selected={selected}
         setSelected={setSelected}
       />

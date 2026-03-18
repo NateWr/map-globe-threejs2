@@ -398,7 +398,7 @@
   const tick = () => {
 
     // Hover effect
-    if (hoverEnabled && countries) {
+    if (hoverEnabled && !isSpinning && countries) {
       const countriesFacingCamera = getObjectsFacingCamera(countryIntersectionObjects)
       raycaster.setFromCamera(mouse, camera)
       const intersectedCountries = raycaster.intersectObjects(countriesFacingCamera, false)

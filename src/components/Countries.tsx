@@ -3,9 +3,13 @@ import { useGLTF } from "@react-three/drei"
 import { Country } from './Country'
 
 export function Countries({
+  hoverEnabled,
+  isSpinning,
   selected,
   setSelected
 } : {
+  hoverEnabled: boolean,
+  isSpinning: boolean,
   selected: Object3D | null,
   setSelected: Function
 }) {
@@ -18,6 +22,8 @@ export function Countries({
         <Country
           key={k}
           country={nodes[k]}
+          hoverEnabled={hoverEnabled}
+          isSpinning={isSpinning}
           selected={selected}
           setSelected={setSelected}
         />

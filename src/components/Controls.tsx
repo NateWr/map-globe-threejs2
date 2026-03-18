@@ -93,10 +93,10 @@ export default function Controls({
       }}
       onEnd={() => {
         if (lastCameraPos.distanceTo(camera.position) < CLICK_DISTANCE_TOLERANCE) {
-          isSpinning = false
+          setIsSpinning(false)
         } else {
           setTimeout(() => {
-            isSpinning = false
+            setIsSpinning(false)
           }, 1)
         }
       }}

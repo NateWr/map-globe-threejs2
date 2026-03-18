@@ -14,10 +14,14 @@ const DISTANCE_TO_GLOBE_EDGE = 250
 
 export function Country({
   country,
+  hoverEnabled,
+  isSpinning,
   selected,
   setSelected
 } : {
   country: Object3D,
+  hoverEnabled: boolean,
+  isSpinning: boolean,
   selected: Object3D | null,
   setSelected: Function
 }) {
@@ -65,7 +69,7 @@ export function Country({
         e.stopPropagation()
       }}
       onPointerOver={(e) => {
-        setHighlighted(isFacingCamera(e.object))
+        setHighlighted(!selected && hoverEnabled && !isSpinning && isFacingCamera(e.object))
         e.stopPropagation()
       }}
       onPointerOut={(e) => {

@@ -13,10 +13,10 @@
   - [ ] tooltip
   - [✔] click to select country
   - [✔] Env map
-  - [ ] FakeGlowMaterial
+  - [✘] FakeGlowMaterial
   - [✔] Load GLB
   - [✘] Check if onPointer events for each mesh create multiple raycasts
-  - [ ] Prevent hover effects on touch devices?
+  - [✔] Prevent hover effects on touch devices?
 - [✔] show country name on hover
 - [ ] Plot points
 - [ ] Arcs
