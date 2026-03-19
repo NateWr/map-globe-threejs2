@@ -11,14 +11,16 @@ import Controls from './Controls';
 const CAMERA_DISTANCE = EARTH_RADIUS * 3
 const LIGHT_1_POS = [EARTH_RADIUS * 2, EARTH_RADIUS * 2, EARTH_RADIUS * 2]
 const LIGHT_2_POS = [- EARTH_RADIUS * 2, - EARTH_RADIUS, - EARTH_RADIUS]
+const TOOLTIP_OFFSET = 16
 
 export default function App() {
 
   const [isSpinning, setIsSpinning] = useState(false)
   const [hoverEnabled, setHoverEnabled] = useState(false)
-  const [mouse, setMouse] = useState<{x: number, y: number}>({x: 0, y: 0})
   const [screen, setScreen] = useState<[number, number]>([0, 0])
   const [selected, setSelected] = useState<THREE.Mesh | null>(null)
+  const [tooltip, setTooltip] = useState('')
+  const [tooltipPos, setTooltipPos] = useState<{x: number, y: number}>({x: 0, y: 0})
 
   useEffect(() => {
     const updateScreen = () => {
@@ -29,45 +31,56 @@ export default function App() {
   }, [])
 
   return (
-    <Canvas
-      camera={{
-        fov: 45,
-        near: 1,
-        position: [0, 20, CAMERA_DISTANCE],
-      }}
-      frameloop='demand'
-      onPointerMissed={() => {
-        setSelected(null)
-      }}
-      onMouseMove={(e) => {
-        setMouse({
-          x: (e.clientX / screen[0]) * 2 - 1,
-          y: - (e.clientY / screen[1]) * 2 + 1,
-        })
-        setHoverEnabled(true)
-      }}
-      onTouchMove={() => {
-        setHoverEnabled(false)
-      }}
-    >
-      <color attach="background" args={['#1a1100']} />
-      <Controls
-        isSpinning={isSpinning}
-        setIsSpinning={setIsSpinning}
-        selected={selected}
-      />
-      <ambientLight intensity={0.2} />
-      <pointLight position={LIGHT_1_POS} color="#ffffff" intensity={3.0} />
-      <pointLight position={LIGHT_2_POS} color="#0xe54600" intensity={1.0} />
-      <Globe
-        screen={screen}
-      />
-      <Countries
-        hoverEnabled={hoverEnabled}
-        isSpinning={isSpinning}
-        selected={selected}
-        setSelected={setSelected}
-      />
-    </Canvas>
+    <>
+      <Canvas
+        camera={{
+          fov: 45,
+          near: 1,
+          position: [0, 20, CAMERA_DISTANCE],
+        }}
+        frameloop='demand'
+        onPointerMissed={() => {
+          setSelected(null)
+        }}
+        onMouseMove={(e) => {
+          setTooltipPos({
+            x: e.clientX + TOOLTIP_OFFSET,
+            y: e.clientY + TOOLTIP_OFFSET,
+          })
+          setHoverEnabled(true)
+        }}
+        onTouchMove={() => {
+          setHoverEnabled(false)
+        }}
+      >
+        <color attach="background" args={['#1a1100']} />
+        <Controls
+          isSpinning={isSpinning}
+          setIsSpinning={setIsSpinning}
+          selected={selected}
+        />
+        <ambientLight intensity={0.2} />
+        <pointLight position={LIGHT_1_POS} color="#ffffff" intensity={3.0} />
+        <pointLight position={LIGHT_2_POS} color="#0xe54600" intensity={1.0} />
+        <Globe
+          screen={screen}
+        />
+        <Countries
+          hoverEnabled={hoverEnabled}
+          isSpinning={isSpinning}
+          setTooltip={setTooltip}
+          selected={selected}
+          setSelected={setSelected}
+        />
+      </Canvas>
+      <div
+        className="fixed top-0 left-0 font-mono font-bold text-sm uppercase text-shadow-sm text-shadow-black"
+        style={{
+          transform: `translate(${tooltipPos.x}px, ${tooltipPos.y}px)`,
+        }}
+      >
+        {tooltip}
+      </div>
+    </>
   );
 }

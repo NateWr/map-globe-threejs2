@@ -6,12 +6,15 @@ export function Countries({
   hoverEnabled,
   isSpinning,
   selected,
-  setSelected
+  setSelected,
+  setTooltip,
 } : {
   hoverEnabled: boolean,
   isSpinning: boolean,
   selected: Object3D | null,
-  setSelected: Function
+  setSelected: Function,
+  highlighted: string,
+  setTooltip: Function,
 }) {
 
   const { nodes } = useGLTF('/globe-country-boundaries-surface-only.glb')
@@ -26,6 +29,7 @@ export function Countries({
           isSpinning={isSpinning}
           selected={selected}
           setSelected={setSelected}
+          setTooltip={setTooltip}
         />
       ))}
     </>

@@ -17,13 +17,15 @@ export function Country({
   hoverEnabled,
   isSpinning,
   selected,
-  setSelected
+  setSelected,
+  setTooltip,
 } : {
   country: Object3D,
   hoverEnabled: boolean,
   isSpinning: boolean,
   selected: Object3D | null,
-  setSelected: Function
+  setSelected: Function,
+  setTooltip: Function,
 }) {
   const [highlighted, setHighlighted] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -70,10 +72,12 @@ export function Country({
       }}
       onPointerOver={(e) => {
         setHighlighted(!selected && hoverEnabled && !isSpinning && isFacingCamera(e.object))
+        setTooltip(country.name)
         e.stopPropagation()
       }}
       onPointerOut={(e) => {
         setHighlighted(false)
+        setTooltip('')
         e.stopPropagation()
       }}
     >
