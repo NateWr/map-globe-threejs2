@@ -9,8 +9,8 @@
 - [✔] Remove CPU/GPU-intensive features on small screens
 - [✔] Center on selected country
 - [✔] Clicks interfere with orbit controls (countries get selected as spinnign the globe)
-- [ ] Rebuild in R3F
-  - [ ] tooltip
+- [✔] Rebuild in R3F
+  - [✔] tooltip
   - [✔] click to select country
   - [✔] Env map
   - [✘] FakeGlowMaterial

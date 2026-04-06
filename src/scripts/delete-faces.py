@@ -4,6 +4,11 @@
 # This changes the meshes from extruded shapes
 # to "flat" planes to reduce polycount.
 #
+# To use this script, select all country meshes
+# and put them into edit mode. After running
+# the script, all the "back" faces will be
+# selected. Delete them.
+#
 # @see https://blender.stackexchange.com/questions/239466/face-selection-by-condition
 
 import bpy

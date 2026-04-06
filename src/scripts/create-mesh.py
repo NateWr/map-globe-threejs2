@@ -16,7 +16,9 @@ def parse_geojson(path):
     file = open(path)
     data = json.load(file)
     for feature in data['features']:
-        name = feature['properties']['name']
+        name = feature['properties']['iso_a2']
+        if (name == "-99"):
+            name = feature['properties']['sov_a3']
         if feature['geometry']['type'] == 'Polygon':
             create_piece(feature['geometry']['coordinates'], name)
         elif feature['geometry']['type'] == 'MultiPolygon':
