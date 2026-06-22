@@ -22,6 +22,8 @@ const GlossyMaterial: React.FC = () => {
   )
 }
 
+const color ='#ca6'
+
 export default function Globe({
   screen,
 } : {
@@ -35,8 +37,8 @@ export default function Globe({
         {screen[0] < SCREEN_WIDTH_LG ? (
           <meshBasicMaterial color="#FFFADD" />
         ) : (
-          <Suspense fallback={<meshBasicMaterial color="#6A9Aff" />}>
-            <meshBasicMaterial color="#5879dd" />
+          <Suspense fallback={<meshBasicMaterial color={color} />}>
+            <meshBasicMaterial color={color} />
           </Suspense>
         )}
       </mesh>
@@ -44,10 +46,9 @@ export default function Globe({
       <mesh>
         <sphereGeometry args={[EARTH_RADIUS * 1.005, 64, 64]} />
         <meshStandardMaterial
-          color="#6A9Aff"
+          color={color}
           transparent
-          opacity={0.75}
-          side={THREE.DoubleSide}
+          opacity={0.5}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />

@@ -86,16 +86,14 @@ export function Country({
         color="#FFfd99"
         opacity={springs.opacity}
       /> */}
-              <meshStandardMaterial
-                color="#FFee00"
-                blending={THREE.AdditiveBlending}
+              <meshBasicMaterial
+                color="#ff46c"
+                blending={THREE.NoBlending}
                 depthWrite={true}
-                roughness={1.0}
-                metalness={0}
               />
       <lineSegments>
         <edgesGeometry args={[country.geometry, 30]} />
-        <lineBasicMaterial color="#eecc88" />
+        <lineBasicMaterial color="#FFBA6B" />
       </lineSegments>
                   {/* <meshPhysicalMaterial
                     color="#FFfd99"

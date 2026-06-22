@@ -53,13 +53,13 @@ export default function App() {
           setHoverEnabled(false)
         }}
       >
-        <color attach="background" args={['#FFfff0']} />
+        <color attach="background" args={['#FFFAE2']} />
         <Controls
           isSpinning={isSpinning}
           setIsSpinning={setIsSpinning}
           selected={selected}
         />
-        <ambientLight intensity={0.8} />
+        <ambientLight intensity={1.0} />
         <pointLight position={LIGHT_1_POS} color="#ffffff" intensity={3.0} />
         <pointLight position={LIGHT_2_POS} color="#ffffff" intensity={1.0} />
         <Globe
