@@ -35,8 +35,8 @@ export default function Globe({
         {screen[0] < SCREEN_WIDTH_LG ? (
           <meshBasicMaterial color="#FFFADD" />
         ) : (
-          <Suspense fallback={<meshBasicMaterial color="#FFFADD" />}>
-            <meshBasicMaterial color="#FFfd99" />
+          <Suspense fallback={<meshBasicMaterial color="#6A9Aff" />}>
+            <meshBasicMaterial color="#5879dd" />
           </Suspense>
         )}
       </mesh>
@@ -44,7 +44,7 @@ export default function Globe({
       <mesh>
         <sphereGeometry args={[EARTH_RADIUS * 1.005, 64, 64]} />
         <meshStandardMaterial
-          color="#eecccc"
+          color="#6A9Aff"
           transparent
           opacity={0.75}
           side={THREE.DoubleSide}

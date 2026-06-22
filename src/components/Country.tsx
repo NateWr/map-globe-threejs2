@@ -4,12 +4,13 @@ import { a } from "@react-spring/three";
 import { useFrame, useThree } from '@react-three/fiber';
 import debounce from 'debounce';
 import { useState } from 'react';
+import * as THREE from 'three'
 
-const COUNTRY_SCALE = 1.06
-const COUNTRY_HIGHLIGHT_SCALE = 1.09
-const COUNTRY_OPACITY = 0.25
-const COUNTRY_HIGHLIGHT_OPACITY = 0.5
-const COUNTRY_SELECTED_OPACITY = 0.9
+const COUNTRY_SCALE = 1.01
+const COUNTRY_HIGHLIGHT_SCALE = 1.01
+const COUNTRY_OPACITY = 1.0
+const COUNTRY_HIGHLIGHT_OPACITY = 1.0
+const COUNTRY_SELECTED_OPACITY = 1.0
 const DISTANCE_TO_GLOBE_EDGE = 250
 
 export function Country({
@@ -81,15 +82,32 @@ export function Country({
         e.stopPropagation()
       }}
     >
-      <a.meshBasicMaterial
-        color="#fff500"
+      {/* <a.meshBasicMaterial
+        color="#FFfd99"
         opacity={springs.opacity}
-        transparent={true}
-      />
+      /> */}
+              <meshStandardMaterial
+                color="#FFee00"
+                blending={THREE.AdditiveBlending}
+                depthWrite={true}
+                roughness={1.0}
+                metalness={0}
+              />
       <lineSegments>
         <edgesGeometry args={[country.geometry, 30]} />
-        <lineBasicMaterial color="#998800" />
+        <lineBasicMaterial color="#eecc88" />
       </lineSegments>
+                  {/* <meshPhysicalMaterial
+                    color="#FFfd99"
+                    roughness={0.75}
+                    metalness={0}
+                    thickness={15}
+                    clearcoat={10.0}
+                    clearcoatRoughness={0.0}
+                    blending={THREE.NoBlending}
+                    transparent
+                    opacity={1.0}
+                  /> */}
     </a.mesh>
   )
 }
