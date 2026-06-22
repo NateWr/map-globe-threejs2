@@ -53,7 +53,7 @@ export default function App() {
           setHoverEnabled(false)
         }}
       >
-        <color attach="background" args={['#FFFAE2']} />
+        <color attach="background" args={['#1C1A0C']} />
         <Controls
           isSpinning={isSpinning}
           setIsSpinning={setIsSpinning}
