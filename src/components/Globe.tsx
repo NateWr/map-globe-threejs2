@@ -5,24 +5,10 @@ import { useCubeTexture } from '@react-three/drei'
 import { Suspense } from 'react'
 
 const GlossyMaterial: React.FC = () => {
-  let envMap = null
-  envMap = useCubeTexture(
-    [
-      'px.jpg',
-      'nx.jpg',
-      'py.jpg',
-      'ny.jpg',
-      'pz.jpg',
-      'nz.jpg',
-    ],
-    {
-      path: 'milky-way-cube-map/',
-    }
-  )
 
   return (
     <meshPhysicalMaterial
-      color="#bb9900"
+      color="#FFFADD"
       roughness={0.75}
       metalness={1}
       thickness={15}
@@ -32,8 +18,6 @@ const GlossyMaterial: React.FC = () => {
       transparent
       opacity={0.5}
       side={THREE.DoubleSide}
-      envMap={envMap}
-      envMapIntensity={0.5}
     />
   )
 }
@@ -49,30 +33,20 @@ export default function Globe({
       <mesh>
         <sphereGeometry args={[EARTH_RADIUS, 64, 64]} />
         {screen[0] < SCREEN_WIDTH_LG ? (
-          <meshBasicMaterial color="#000000" />
+          <meshBasicMaterial color="#FFFADD" />
         ) : (
-          <Suspense fallback={<meshBasicMaterial color="#000000" />}>
-            <GlossyMaterial />
+          <Suspense fallback={<meshBasicMaterial color="#FFFADD" />}>
+            <meshBasicMaterial color="#FFfd99" />
           </Suspense>
         )}
       </mesh>
 
       <mesh>
-        <sphereGeometry args={[EARTH_RADIUS * 1.05, 32, 32]} />
-        <meshBasicMaterial
-          color="#ffea00"
-          wireframe
-          transparent
-          opacity={0.035}
-        />
-      </mesh>
-
-      <mesh>
         <sphereGeometry args={[EARTH_RADIUS * 1.005, 64, 64]} />
         <meshStandardMaterial
-          color="#bb9900"
+          color="#eecccc"
           transparent
-          opacity={0.5}
+          opacity={0.75}
           side={THREE.DoubleSide}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
