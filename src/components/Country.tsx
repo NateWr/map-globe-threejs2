@@ -87,7 +87,7 @@ export function Country({
         opacity={springs.opacity}
       /> */}
               <meshBasicMaterial
-                color="#ff46c"
+                color="#f46"
                 blending={THREE.NoBlending}
                 depthWrite={true}
               />
